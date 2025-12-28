@@ -1,0 +1,6 @@
+@MemorizationApp.Web_HostAddress = http://localhost:5145
+
+GET {{MemorizationApp.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

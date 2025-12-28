@@ -1,0 +1,13 @@
+
+.button {
+    border-radius: 4px;
+    background-color: #4CAF50;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+
+    &:hover {
+        background-color: #2b682e;
+    }
+}
+// TODO: color scheme

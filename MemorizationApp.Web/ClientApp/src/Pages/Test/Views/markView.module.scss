@@ -1,0 +1,29 @@
+
+.wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.originalText, .yourText {
+    padding: 10px;
+    border-right: 2px solid black;
+    border-left: 2px solid black;
+    background-color: #ccc;
+    width: 50%;
+
+    span {
+        border-radius: 4px;
+        color: white;
+        font-weight: 600;
+        padding: 0 5px;
+    }
+}
+
+.originalText span {
+    background-color: green;
+}
+
+.yourText span {
+    background-color: red;
+}
