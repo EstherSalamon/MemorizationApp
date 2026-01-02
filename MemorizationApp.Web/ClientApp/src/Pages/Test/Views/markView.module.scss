@@ -1,29 +1,30 @@
 
-.wrapper {
+.container {
     display: flex;
     gap: 10px;
-    align-items: center;
 }
 
-.originalText, .yourText {
+.wrapper {
+    width: 100%;
+}
+
+.recitalText, .compareText {
     padding: 10px;
     border-right: 2px solid black;
     border-left: 2px solid black;
-    background-color: #ccc;
-    width: 50%;
+    background-color: #eee;
 
     span {
-        border-radius: 4px;
         color: white;
         font-weight: 600;
-        padding: 0 5px;
+        padding: 0 2px;
     }
 }
 
-.originalText span {
+.recitalText span {
     background-color: green;
 }
 
-.yourText span {
+.compareText span {
     background-color: red;
 }

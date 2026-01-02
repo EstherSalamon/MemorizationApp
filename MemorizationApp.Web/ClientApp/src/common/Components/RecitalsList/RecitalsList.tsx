@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { IRecital } from "../../../Pages/Home/HomePage";
-import { RecitalCard } from "../../../Pages/Home/RecitalCard/RecitalCard";
+import { RecitalCard } from "./RecitalCard/RecitalCard";
 
 import styles from "./recitalsList.module.scss";
 

@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
-import { IRecital } from "../HomePage";
-import { NavigateToView } from "../../../common/Utils/NavigationUtil";
+import { IRecital } from "../../../../Pages/Home/HomePage";
+import { NavigateToView } from "../../../Utils/NavigationUtil";
 
 import styles from "./recitalCard.module.scss";
 

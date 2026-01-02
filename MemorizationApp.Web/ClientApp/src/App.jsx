@@ -4,6 +4,7 @@ import { HomePage } from './Pages/Home/HomePage';
 import { ViewRecitalPage } from './Pages/View/ViewRecitalPage';
 import { TestRecitalPage } from './Pages/Test/TestRecitalPage';
 import { AddRecitalPage } from './Pages/Add/AddRecitalPage';
+
 const App = () => {
     return (
         <Layout>
@@ -18,3 +19,5 @@ const App = () => {
 }
 
 export default App;
+
+// TODO: id as searchparam, not path

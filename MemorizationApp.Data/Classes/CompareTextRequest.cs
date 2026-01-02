@@ -1,8 +1,8 @@
 ﻿namespace MemorizationApp.Data.Classes
 {
-    public class CheckTextRequest
+    public class CompareTextRequest
     {
         public int RecitalId { get; set; }
-        public string RecitalText { get; set; }
+        public string CompareText { get; set; }
     }
 }

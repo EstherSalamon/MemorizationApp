@@ -20,9 +20,15 @@ export const MarkView: FunctionComponent<IRecitalResponseProps> = ({ recital, re
     return (
         <>
             <Header>{recital.title}</Header>
-            <div className={styles.wrapper}>
-                <div className={styles.originalText} dangerouslySetInnerHTML={{ __html: response.originalText }} />
-                <div className={styles.yourText} dangerouslySetInnerHTML={{ __html: response.finalText }} />
+            <div className={styles.container}>
+                <div className={styles.wrapper}>
+                    <h5>Original Recital</h5>
+                    <div className={styles.recitalText} dangerouslySetInnerHTML={{ __html: response.recitalText }} />
+                </div>
+                <div className={styles.wrapper}>
+                    <h5>Your Text</h5>
+                    <div className={styles.compareText} dangerouslySetInnerHTML={{ __html: response.compareText }} />
+                </div>
             </div>
         </>
     )

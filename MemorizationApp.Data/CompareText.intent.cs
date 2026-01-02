@@ -11,48 +11,119 @@ namespace MemorizationApp.Data
 {
     public class CompareText
     {
-        public static CheckTextResponse DoCompare(CheckTextRequest requestData, string connection)
+        public static CompareTextResponse DoCompare(CompareTextRequest data, string connection)
         {
-            int id = requestData.RecitalId;
-            string text = requestData.RecitalText;
-
-            RecitalsRepository repo = new RecitalsRepository(connection);
-            Recital originalRecital = repo.getById(id);
-
-
-            return figureThisOut(originalRecital.Text, text);
+            return DoCompare(data, connection, CompareType.Exact);
         }
 
-        private static CheckTextResponse figureThisOut(string originalText, string compareText)
+        public static CompareTextResponse DoCompare(CompareTextRequest data, string connection, CompareType compareType)
         {
-            List<String> adjustedOriginal = new List<string>();
-            List<String> adjustedCmpoare = new List<string>();
+            RecitalsRepository repo = new RecitalsRepository(connection);
+            Recital originalRecital = repo.getById(data.RecitalId);
 
-            String[] orignalBrokens = originalText.Split(" ");
-            String[] compareBrokens = compareText.Split(" ");
+            CompareTextResponse response = new CompareTextResponse();
 
-            for(int i = 0; i < orignalBrokens.Length; i++)
+            switch(compareType)
             {
-                if (orignalBrokens[i] != compareBrokens[i])
-                {
-                    adjustedOriginal.Add($"<span>{orignalBrokens[i]}</span>");
-                    adjustedCmpoare.Add($"<span>{compareBrokens[i]}</span>");
-                } 
-                else
-                {
-                    adjustedOriginal.Add(orignalBrokens[i]);
-                    adjustedCmpoare.Add(compareBrokens[i]);
-                }
+                case CompareType.Exact:
+                    response = ExactTextCompare(originalRecital.Text, data.CompareText);
+                    break;
             }
 
-            return new CheckTextResponse { OriginalText = String.Join(" ", adjustedOriginal), FinalText = String.Join(" ", adjustedCmpoare) };
+            return response; // TODO: change to status: success, data: response
+        }
+
+        private static CompareTextResponse ExactTextCompare(string recitalText, string compareText)
+        {
+            List<string> finalRecitalText = new List<string>();
+            List<string> finalCompareText = new List<string>();
+
+            string[] recitalTextWords = recitalText.Split(" ").Where(word => word != "").ToArray();
+            string[] compareTextWords = compareText.Split(" ").Where(word => word != "").ToArray();
+
+            try
+            {
+                for (int i = 0; i < recitalTextWords.Length; i++)
+                {
+                    if (i != recitalTextWords.Length && i == compareTextWords.Length)
+                    {
+                        finalRecitalText.Add(Spanify(String.Join(" ", recitalTextWords.Skip(i))));
+                        break;
+                    }
+                    else if (!AreStringsEqual(recitalTextWords[i], compareTextWords[i]))
+                    {
+                        finalRecitalText.Add(Spanify(recitalTextWords[i]));
+                        finalCompareText.Add(Spanify(compareTextWords[i]));
+                    }
+                    else
+                    {
+                        finalRecitalText.Add(recitalTextWords[i]);
+                        finalCompareText.Add(compareTextWords[i]);
+                    }
+                }
+
+                if(compareTextWords.Length > recitalTextWords.Length)
+                {
+                    finalCompareText.Add(Spanify(String.Join(" ", compareTextWords.Skip(recitalTextWords.Length))));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("exact compare error: " + e);
+            }
+
+            return new CompareTextResponse { RecitalText = String.Join(" ", finalRecitalText), CompareText = String.Join(" ", finalCompareText) };
+        }
+
+        private static string Spanify(string text)
+        {
+            return $"<span>{text}</span>";
+        }
+
+
+
+        private static bool AreStringsEqual(string string1, string string2)
+        {
+            return AreStringsEqual(string1, string2, CompareType.Exact);
+        }
+
+        private static bool AreStringsEqual(string string1, string string2, CompareType type)
+        {
+            if(type == CompareType.Exact)
+            {
+                return string1 == string2;
+            }
+            else if(type == CompareType.Spellcheck)
+            {
+                if(string1 == string2)
+                {
+                    return true;
+                }
+                else
+                {
+                    return AreStringsSameLetters(string1, string2);
+                }
+            }
+            else
+            {
+                return string1 == string2;
+            }
+        }
+
+        private static bool AreStringsSameLetters(string string1, string string2)
+        {
+            return false; // TODO
         }
     }
+}
+
+public enum CompareType
+{
+    Exact,
+    Spellcheck,
 }
 
 // TODO:
 // use regex to split? add a mark, percentage of words correct. 
 // the logic is basic, fix it for different lengths strings, multiple words. 
 // give spans a classname?
-// More Functionality ideas:
-// spell check, marking preferences - cookies

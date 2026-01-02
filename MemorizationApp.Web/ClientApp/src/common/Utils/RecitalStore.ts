@@ -27,8 +27,8 @@ export class RecitalStore {
         return data as IRecital;
     }
 
-    public static async checkText(text: string, id: string) {
-        const data = await axios.post("/api/recitals/test/knowledge", { id, text });
+    public static async compareText(text: string, id: string) {
+        const data = await axios.post("/api/recitals/test/knowledge", { RecitalId: id, CompareText: text });
         return {
             success: data.status === HttpStatusCode.Ok,
             response: data.data as ICheckTextResponse
@@ -37,8 +37,8 @@ export class RecitalStore {
 }
 
 export interface ICheckTextResponse {
-    finalText: string;
-    originalText: string;
+    recitalText: string;
+    compareText: string;
 }
 
 export interface IAddRecitalResponse {

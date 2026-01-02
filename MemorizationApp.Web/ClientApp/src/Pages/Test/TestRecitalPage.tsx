@@ -36,9 +36,7 @@ export const TestRecitalPage: FunctionComponent = () => {
     function _getComponent() {
         switch (view) {
             case IRecitalStages.SELECT:
-                return <SelectView onClick={(id) => {
-                    setCurrentRecitalId(id);
-                }} />;
+                return <SelectView onClick={(id) => setCurrentRecitalId(id)} />;
             case IRecitalStages.RECITE:
                 return <ReciteView recital={recital!} onSubmitClick={handleTestClick} />;
             case IRecitalStages.MARK:
@@ -47,7 +45,7 @@ export const TestRecitalPage: FunctionComponent = () => {
     };
 
     async function handleTestClick(text: string) {
-        const result = await RecitalStore.checkText(text, recital!.id.toString());
+        const result = await RecitalStore.compareText(text, recital!.id.toString());
         if (result.success) {
             setCheckTextResponse(result.response);
             setView(IRecitalStages.MARK);

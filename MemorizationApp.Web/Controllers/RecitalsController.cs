@@ -25,7 +25,7 @@ namespace MemorizationApp.Web.Controllers
         }
 
         [HttpPost("add")]
-        public AddRecitalResponse AddRecital(Recital recital) //make them take in obj and return obj, not this
+        public AddRecitalResponse AddRecital(Recital recital)
         {
             RecitalsRepository repo = new RecitalsRepository(_connectionString);
             int id = repo.addRecital(recital);
@@ -40,10 +40,12 @@ namespace MemorizationApp.Web.Controllers
         }
 
         [HttpPost("test/knowledge")]
-        public CheckTextResponse CheckLogic(CheckTextVM vm) 
+        public CompareTextResponse CheckLogic(CompareTextVM vm) 
         {
-            var data = new CheckTextRequest { RecitalId = vm.Id, RecitalText = vm.Text };
+            var data = new CompareTextRequest { RecitalId = vm.RecitalId, CompareText = vm.CompareText };
             return CompareText.DoCompare(data, _connectionString);
         }
     }
 }
+//TODO: all apis should send in object
+// and returntype { status: success; data: any } | { status: error; messages: [] }
