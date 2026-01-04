@@ -8,7 +8,7 @@ import styles from "./markView.module.scss";
 
 interface IRecitalResponseProps {
     recital: IRecital;
-    response: ICheckTextResponse | null;
+    response: ICheckTextResponse["data"] | null;
 }
 
 export const MarkView: FunctionComponent<IRecitalResponseProps> = ({ recital, response }) => {

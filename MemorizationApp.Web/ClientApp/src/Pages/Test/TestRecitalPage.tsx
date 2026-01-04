@@ -3,7 +3,7 @@ import { useLoadRecitalById } from "../../common/Hooks/useLoadRecitalById";
 import { SelectView } from "./Views/SelectView";
 import { ReciteView } from "./Views/ReciteView";
 import { MarkView } from "./Views/MarkView";
-import { RecitalStore, ICheckTextResponse } from "../../common/Utils/RecitalStore";
+import { RecitalStore, ICheckTextResponse, ResponseStatus } from "../../common/Utils/RecitalStore";
 import { IRecital } from "../Home/HomePage";
 
 enum IRecitalStages {
@@ -15,7 +15,7 @@ enum IRecitalStages {
 export const TestRecitalPage: FunctionComponent = () => {
     const [view, setView] = useState<IRecitalStages>(IRecitalStages.SELECT);
     const [currentRecitalId, setCurrentRecitalId] = useState<number | null>(null);
-    const [checkTextResponse, setCheckTextResponse] = useState<ICheckTextResponse | null>(null);
+    const [checkTextResponse, setCheckTextResponse] = useState<ICheckTextResponse["data"] | null>(null);
     const setSelectView = () => setView(IRecitalStages.SELECT);
     const [recital, setRecital] = useState<IRecital | null>(useLoadRecitalById(setSelectView));
 
@@ -45,10 +45,12 @@ export const TestRecitalPage: FunctionComponent = () => {
     };
 
     async function handleTestClick(text: string) {
-        const result = await RecitalStore.compareText(text, recital!.id.toString());
-        if (result.success) {
-            setCheckTextResponse(result.response);
+        const response = await RecitalStore.compareText(text, recital!.id.toString());
+        if (response.status === ResponseStatus.Success) {
+            setCheckTextResponse(response.data);
             setView(IRecitalStages.MARK);
+        } else {
+            console.log(response.message); // TODO show toast
         }
     }
 

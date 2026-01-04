@@ -28,17 +28,26 @@ export class RecitalStore {
     }
 
     public static async compareText(text: string, id: string) {
-        const data = await axios.post("/api/recitals/test/knowledge", { RecitalId: id, CompareText: text });
-        return {
-            success: data.status === HttpStatusCode.Ok,
-            response: data.data as ICheckTextResponse
-        };
+        const { data } = await axios.post("/api/recitals/compare", { RecitalId: id, CompareText: text });
+        return data as ICheckTextResponse;
     }
 }
 
-export interface ICheckTextResponse {
-    recitalText: string;
-    compareText: string;
+export enum ResponseStatus {
+    Success,
+    Error,
+}
+
+export interface IFormResponse {
+    status: ResponseStatus;
+    message: string;
+}
+
+export interface ICheckTextResponse extends IFormResponse {
+    data: {
+        recitalText: string;
+        compareText: string;
+    }
 }
 
 export interface IAddRecitalResponse {

@@ -39,7 +39,7 @@ namespace MemorizationApp.Web.Controllers
             return repo.getById(id);
         }
 
-        [HttpPost("test/knowledge")]
+        [HttpPost("compare")]
         public CompareTextResponse CheckLogic(CompareTextVM vm) 
         {
             var data = new CompareTextRequest { RecitalId = vm.RecitalId, CompareText = vm.CompareText };
