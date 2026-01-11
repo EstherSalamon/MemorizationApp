@@ -4,5 +4,6 @@
     {
         public int RecitalId { get; set; }
         public string CompareText { get; set; }
+        public List<CompareType> Preferences {get; set;}
     }
 }

@@ -7,11 +7,12 @@ export function useGetAllRecitals() {
     const [recitals, setRecitals] = useState<IRecital[] | null>(null);
 
     useEffect(() => {
-        const preloadData = async () => {
-            const data = await RecitalStore.getAll();
-            setRecitals(data);
-        }
-        preloadData();
+
+        RecitalStore.getAll().then(response => {
+            if (response) {
+                setRecitals(response.recitals);
+            }
+        })
 
     }, [])
 

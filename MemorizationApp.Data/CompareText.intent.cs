@@ -1,53 +1,42 @@
 ﻿using MemorizationApp.Data.Classes;
 using Microsoft.IdentityModel.Tokens;
 using NHunspell;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MemorizationApp.Data
 {
-    public class CompareText
+    public class CompareTextIntent
     {
-        public static CompareTextResponse DoCompare(CompareTextRequest data, string connection)
-        {
-            return DoCompare(data, connection, CompareType.Exact);
-        }
-
-        public static CompareTextResponse DoCompare(CompareTextRequest data, string connection, CompareType compareType)
+        public static CompareTextResponse DoCompare(string connection, CompareTextRequest data)
         {
             RecitalsRepository repo = new RecitalsRepository(connection);
             Recital originalRecital = repo.getById(data.RecitalId);
 
-            CompareTextResponse response = new CompareTextResponse();
+            if(originalRecital == null || data.CompareText == null)
+            {
+                return new CompareTextResponse { Status = ResponseStatus.Error, Message = "Invalid Data" };
+            }
 
             try
             {
-                response.Data = ExactTextCompare(originalRecital.Text, data.CompareText, CompareType.ExactNoPunctuation);
-                response.Status = ResponseStatus.Success;
+                CompareTextData responseData = CompareText(originalRecital.Text, data.CompareText, data.Preferences);
+                return new CompareTextResponse { Status = ResponseStatus.Success, Data = responseData };
             }
             catch(Exception e)
             {
                 Console.WriteLine("Compare Text Error: " + e);
-                response.Status = ResponseStatus.Error;
-                response.Message = "An error occured, please try again soon";
+                return new CompareTextResponse { Status = ResponseStatus.Error, Message = "An error occured, please try again soon" };
             }
-
-            return response;
         }
 
-        private static CompareTextData ExactTextCompare(string recitalText, string compareText, CompareType type)
+        private static CompareTextData CompareText(string recitalText, string compareText, List<CompareType> preferences)
         {
+            //set preferences on session?
             List<string> finalRecitalText = new List<string>();
             List<string> finalCompareText = new List<string>();
 
-            string[] recitalTextWords = RemovePunctuation(recitalText, type).Split(" ").Where(word => !word.IsNullOrEmpty()).ToArray();
-            string[] compareTextWords = RemovePunctuation(compareText, type).Split(" ").Where(word => !word.IsNullOrEmpty()).ToArray();
+            string[] recitalTextWords = recitalText.Split(" ").Where(word => !word.IsNullOrEmpty()).ToArray();
+            string[] compareTextWords = compareText.Split(" ").Where(word => !word.IsNullOrEmpty()).ToArray();
 
             for (int i = 0; i < recitalTextWords.Length; i++)
             {
@@ -56,7 +45,7 @@ namespace MemorizationApp.Data
                     finalRecitalText.Add(Spanify(String.Join(" ", recitalTextWords.Skip(i))));
                     break;
                 }
-                else if(AreWordsEqual(recitalTextWords[i], compareTextWords[i], type))
+                else if(AreWordsEqual(recitalTextWords[i], compareTextWords[i], preferences))
                 {
                     finalRecitalText.Add(recitalTextWords[i]);
                     finalCompareText.Add(compareTextWords[i]);
@@ -67,7 +56,7 @@ namespace MemorizationApp.Data
                     int endIndex = i + 1;
                     for(int j = i + 1; j < recitalTextWords.Length; j++)
                     {
-                        if(j == compareTextWords.Length || AreWordsEqual(recitalTextWords[j], compareTextWords[j], type))
+                        if(j == compareTextWords.Length || AreWordsEqual(recitalTextWords[j], compareTextWords[j], preferences))
                         {
                             break;
                         }
@@ -101,27 +90,34 @@ namespace MemorizationApp.Data
             return $"<span>{text}</span>";
         }
 
-        private static string RemovePunctuation(string text, CompareType type)
+        private static bool AreWordsEqual(string word1, string word2, List<CompareType> preferences)
         {
-            switch(type)
+            if(word1 == word2)
             {
-                case CompareType.Exact:
-                case CompareType.Spellcheck:
-                    return text;
-                default:
-                    text = Regex.Replace(text, @"[^\w\d\s]", "");
-                    return text;
+                return true;
             }
-        }
 
-        private static bool AreWordsEqual(string word1, string word2, CompareType type)
-        {
-            return word1 == word2 || (IsSpellcheckType(type) && SpellcheckWord(word1, word2));
-        }
+            string adjustedWord1 = word1;
+            string adjustedWord2 = word2;
 
-        private static bool IsSpellcheckType(CompareType type)
-        {
-            return type == CompareType.Spellcheck || type == CompareType.SpellcheckNoPunctuation;
+            if(preferences.Contains(CompareType.CaseInsensitive))
+            {
+                adjustedWord1 = adjustedWord1.ToLower();
+                adjustedWord2 = adjustedWord2.ToLower();
+            }
+
+            if(preferences.Contains(CompareType.IgnorePunctuation))
+            {
+                adjustedWord1 = Regex.Replace(adjustedWord1, @"[^\w\d\s]", "");
+                adjustedWord2 = Regex.Replace(adjustedWord2, @"[^\w\d\s]", "");
+            }
+
+            if(preferences.Contains(CompareType.Spellcheck))
+            {
+                return SpellcheckWord(adjustedWord1, adjustedWord2);
+            }
+
+            return adjustedWord1 == adjustedWord2;
         }
 
         private static bool SpellcheckWord(string originalWord, string misspelledWord)
@@ -173,6 +169,7 @@ namespace MemorizationApp.Data
                     string substring2;
                     if (startIndex + length == word1.Length &&  word2.Length > word1.Length)
                     {
+                        //may not be necessary if have lookahead
                         finishedWord2 = true;
                         substring2 = word2.Substring(startIndex);
                     }
@@ -198,10 +195,9 @@ namespace MemorizationApp.Data
 
 public enum CompareType
 {
-    Exact,
-    ExactNoPunctuation,
     Spellcheck,
-    SpellcheckNoPunctuation,
+    IgnorePunctuation,
+    CaseInsensitive,
 }
 
 // TODO:

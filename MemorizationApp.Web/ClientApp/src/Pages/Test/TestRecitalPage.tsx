@@ -3,8 +3,9 @@ import { useLoadRecitalById } from "../../common/Hooks/useLoadRecitalById";
 import { SelectView } from "./Views/SelectView";
 import { ReciteView } from "./Views/ReciteView";
 import { MarkView } from "./Views/MarkView";
-import { RecitalStore, ICheckTextResponse, ResponseStatus } from "../../common/Utils/RecitalStore";
+import { RecitalStore } from "../../common/Utils/RecitalStore";
 import { IRecital } from "../Home/HomePage";
+import { ICheckTextResponse } from "../../common/Utils/RecitalApiTypes";
 
 enum IRecitalStages {
     SELECT = "Select",
@@ -15,17 +16,19 @@ enum IRecitalStages {
 export const TestRecitalPage: FunctionComponent = () => {
     const [view, setView] = useState<IRecitalStages>(IRecitalStages.SELECT);
     const [currentRecitalId, setCurrentRecitalId] = useState<number | null>(null);
-    const [checkTextResponse, setCheckTextResponse] = useState<ICheckTextResponse["data"] | null>(null);
+    const [checkTextResponse, setCheckTextResponse] = useState<ICheckTextResponse | null>(null);
     const setSelectView = () => setView(IRecitalStages.SELECT);
     const [recital, setRecital] = useState<IRecital | null>(useLoadRecitalById(setSelectView));
 
     useEffect(() => {
         async function loadRecital() {
             if (currentRecitalId && (!recital || recital.id !== currentRecitalId)) {
-                await RecitalStore.getById(currentRecitalId.toString()).then(
-                    (rec) => {
-                        setRecital(rec)
-                        setView(IRecitalStages.RECITE)
+                RecitalStore.getById(currentRecitalId.toString()).then(
+                    (response) => {
+                        if (response) {
+                            setRecital(response.recital)
+                            setView(IRecitalStages.RECITE)
+                        }
                     }
                 );
             }
@@ -44,14 +47,13 @@ export const TestRecitalPage: FunctionComponent = () => {
         }
     };
 
-    async function handleTestClick(text: string) {
-        const response = await RecitalStore.compareText(text, recital!.id.toString());
-        if (response.status === ResponseStatus.Success) {
-            setCheckTextResponse(response.data);
-            setView(IRecitalStages.MARK);
-        } else {
-            console.log(response.message); // TODO show toast
-        }
+    function handleTestClick(text: string) {
+        RecitalStore.compareText(text, recital!.id.toString()).then((response) => {
+            if (response) {
+                setCheckTextResponse(response);
+                setView(IRecitalStages.MARK);
+            }
+        });
     }
 
     return _getComponent();

@@ -1,57 +1,30 @@
-import axios, { HttpStatusCode } from "axios";
 import { IRecital } from "../../Pages/Home/HomePage";
+import { IAddRecitalResponse, ICheckTextResponse, IGetAllRecitalsResponse, IGetByIdResponse } from "./RecitalApiTypes";
+import { AxiosMethod, doApiRequest, IApiProps } from "./ApiUtil";
 
 export class RecitalStore {
 
-    public static getAll() {
-        const loadData = async () => {
-            const { data } = await axios.get("/api/recitals/all");
-            return data as IRecital[];
-        }
-        return loadData();
+    public static async getAll() {
+        const props: IApiProps = { method: AxiosMethod.GET, endpoint: "all" };
+        return await doApiRequest<IGetAllRecitalsResponse>(props);
     }
 
-    public static addRecital(recital: IRecital) {
-        const doLoad = async () => {
-            const response = await axios.post("/api/recitals/add", recital);
-            return response.data as IAddRecitalResponse;
-        };
-        return doLoad();
+    public static async addRecital(recital: IRecital) {
+        const props: IApiProps<{ Recital: IRecital }> = { method: AxiosMethod.POST, endpoint: "add", payload: { Recital: recital } };
+        return await doApiRequest<IAddRecitalResponse, { Recital: IRecital }>(props);
     }
 
     public static async getById(id?: string) {
         if (!id) {
             return null;
         }
-        const { data } = await axios.get(`/api/recitals/byid?id=${id}`);
-        return data as IRecital;
+        const props: IApiProps<{ RecitalId: string }> = { method: AxiosMethod.GET, endpoint: "byid", payload: { RecitalId: id } };
+        return await doApiRequest<IGetByIdResponse, { RecitalId: string }>(props);
     }
 
     public static async compareText(text: string, id: string) {
-        const { data } = await axios.post("/api/recitals/compare", { RecitalId: id, CompareText: text });
-        return data as ICheckTextResponse;
+        const props: IApiProps<{ RecitalId: string; CompareText: string }> = { method: AxiosMethod.POST, endpoint: "compare", payload: { RecitalId: id, CompareText: text } };
+        return await doApiRequest<ICheckTextResponse, { RecitalId: string; CompareText: string }>(props)
     }
 }
-
-export enum ResponseStatus {
-    Success,
-    Error,
-}
-
-export interface IFormResponse {
-    status: ResponseStatus;
-    message: string;
-}
-
-export interface ICheckTextResponse extends IFormResponse {
-    data: {
-        recitalText: string;
-        compareText: string;
-    }
-}
-
-export interface IAddRecitalResponse {
-    recitalId: number;
-}
-
-// TODO: add state, move types
+// TODO: add state?

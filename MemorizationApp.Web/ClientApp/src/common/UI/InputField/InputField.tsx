@@ -1,22 +1,26 @@
-import { FunctionComponent, InputHTMLAttributes } from "react";
+import { FunctionComponent, InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 import styles from "./inputField.module.scss";
 
-interface IInputProps extends InputHTMLAttributes<HTMLInputElement> { }
-
-interface ITextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
-    rows?: number;
+interface IFieldProps {
+    fieldType: "input" | "textarea";
 }
 
-type IInputFieldProps = IInputProps | ITextAreaProps;
+interface IInputProps extends IFieldProps, InputHTMLAttributes<HTMLInputElement> {
+    fieldType: "input";
+}
 
-export const TextArea: FunctionComponent<ITextAreaProps> = ({ rows, ...props }) => {
+interface ITextFieldProps extends IFieldProps, TextareaHTMLAttributes<HTMLTextAreaElement> {
+    fieldType: "textarea";
+}
+
+type IInputFieldProps = IInputProps | ITextFieldProps;
+
+export const InputField: FunctionComponent<IInputFieldProps> = (props) => {
+
     return (
-        <textarea className={styles.input} rows={rows ?? 10} {...props}></textarea>
+        props.fieldType === "input" ?
+            <input className={styles.input} {...props} />
+            : <textarea className={styles.input} rows={props.rows ?? 10} {...props}></textarea>
     )
 }
-
-export const Input: FunctionComponent<IInputProps> = (props) => {
-    return <input {...props} className={styles.input} />
-}
-// TODO: make 1 component with conditional rendering, fix rows prop

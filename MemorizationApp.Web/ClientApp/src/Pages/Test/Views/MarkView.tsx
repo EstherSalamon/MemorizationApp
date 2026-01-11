@@ -1,14 +1,14 @@
 import { FunctionComponent } from "react";
 import { IRecital } from "../../Home/HomePage";
-import { ICheckTextResponse } from "../../../common/Utils/RecitalStore";
 import { Loader } from "../../../common/UI/Loader/Loader";
 import { Header } from "../../../common/UI/Header/Header";
+import { ICheckTextResponse } from "../../../common/Utils/RecitalApiTypes";
 
 import styles from "./markView.module.scss";
 
 interface IRecitalResponseProps {
     recital: IRecital;
-    response: ICheckTextResponse["data"] | null;
+    response: ICheckTextResponse | null;
 }
 
 export const MarkView: FunctionComponent<IRecitalResponseProps> = ({ recital, response }) => {

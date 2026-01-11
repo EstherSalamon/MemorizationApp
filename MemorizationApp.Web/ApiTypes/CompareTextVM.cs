@@ -4,13 +4,6 @@
     {
         public int RecitalId { get; set; }
         public string CompareText { get; set; }
+        public List<CompareType> Preferences {get; set;}
     }
-
-    //public class CheckTextResponseVM
-    //{
-    //    public int Id { get; set; }
-    //    public string CompareText { get; set; }
-    //    public string YourText { get; set; }
-    //} 
-    // TODO: currently using backend type directly, fix
 }

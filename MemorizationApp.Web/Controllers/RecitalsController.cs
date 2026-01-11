@@ -18,34 +18,28 @@ namespace MemorizationApp.Web.Controllers
         }
 
         [HttpGet("all")]
-        public List<Recital> GetAll()
+        public GetRecitalsResponse GetAll()
         {
-            RecitalsRepository repo = new RecitalsRepository(_connectionString);
-            return repo.getAll();
+            return RecitalAdapter.DoGetAllRecitals(_connectionString);
         }
 
         [HttpPost("add")]
-        public AddRecitalResponse AddRecital(Recital recital)
+        public AddRecitalResponse AddRecital(AddRecitalVM vm)
         {
-            RecitalsRepository repo = new RecitalsRepository(_connectionString);
-            int id = repo.addRecital(recital);
-            return new AddRecitalResponse { RecitalId = id };
+            return RecitalAdapter.DoAddRecital(_connectionString, vm.Recital);
         }
 
         [HttpGet("byid")]
-        public Recital GetById(int id)
+        public RecitalByIdResponse GetById([FromQuery] RecitalByIdVM vm)
         {
-            RecitalsRepository repo = new RecitalsRepository(_connectionString);
-            return repo.getById(id);
+            return RecitalAdapter.DoGetById(_connectionString, vm.RecitalId);
         }
 
         [HttpPost("compare")]
-        public CompareTextResponse CheckLogic(CompareTextVM vm) 
+        public CompareTextResponse CompareText(CompareTextVM vm) 
         {
-            var data = new CompareTextRequest { RecitalId = vm.RecitalId, CompareText = vm.CompareText };
-            return CompareText.DoCompare(data, _connectionString);
+            CompareTextRequest data = new CompareTextRequest { RecitalId = vm.RecitalId, CompareText = vm.CompareText, Preferences = vm.Preferences };
+            return CompareTextIntent.DoCompare(_connectionString, data);
         }
     }
 }
-//TODO: all apis should send in object
-// and returntype { status: success; data: any } | { status: error; messages: [] }

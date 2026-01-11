@@ -13,8 +13,11 @@ export function useLoadRecitalById(callbackIfNull?: () => void) {
             if (!id) {
                 callbackIfNull?.();
             } else {
-                const response = await RecitalStore.getById(id);
-                setRecital(response);
+                RecitalStore.getById(id).then(response => {
+                    if (response) {
+                        setRecital(response.recital);
+                    }
+                });
             }
 
         }
