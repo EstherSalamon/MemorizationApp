@@ -17,17 +17,22 @@ export const MarkView: FunctionComponent<IRecitalResponseProps> = ({ recital, re
         return <Loader />;
     }
 
+
     return (
         <>
             <Header>{recital.title}</Header>
             <div className={styles.container}>
                 <div className={styles.wrapper}>
                     <h5>Original Recital</h5>
-                    <div className={styles.recitalText} dangerouslySetInnerHTML={{ __html: response.recitalText }} />
+                    <div className={styles.recitalText}>
+                        {response.recitalText.map(({ text, isDiff }) => <span className={isDiff ? styles.diff : ""}>{text}</span>)}
+                    </div>
                 </div>
                 <div className={styles.wrapper}>
                     <h5>Your Text</h5>
-                    <div className={styles.compareText} dangerouslySetInnerHTML={{ __html: response.compareText }} />
+                    <div className={styles.compareText}>
+                        {response.compareText.map(({ text, isDiff }) => <span className={isDiff ? styles.diff : ""}>{text}</span>)}
+                    </div>
                 </div>
             </div>
         </>

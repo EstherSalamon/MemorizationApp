@@ -26,6 +26,11 @@ export interface IGetByIdResponse {
 }
 
 export interface ICheckTextResponse {
-    recitalText: string;
-    compareText: string;
+    recitalText: IDiffPieces[];
+    compareText: IDiffPieces[];
+}
+
+interface IDiffPieces {
+    text: string;
+    isDiff: boolean;
 }

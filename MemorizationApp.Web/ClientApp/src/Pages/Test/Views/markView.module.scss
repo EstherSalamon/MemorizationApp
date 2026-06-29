@@ -14,17 +14,17 @@
     border-left: 2px solid black;
     background-color: #eee;
 
-    span {
+    .diff {
         color: white;
         font-weight: 600;
         padding: 0 2px;
     }
 }
 
-.recitalText span {
+.recitalText .diff {
     background-color: green;
 }
 
-.compareText span {
+.compareText .diff {
     background-color: red;
 }
